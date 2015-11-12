@@ -6,9 +6,9 @@ import numpy as np
 import imutils
  
 camera = PiCamera()
-camera.resolution = (150, 100)
+camera.resolution = (300,200)
 camera.framerate = 30
-rawCapture = PiRGBArray(camera, size=(150, 100))
+rawCapture = PiRGBArray(camera, size=(300,200))
 
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
 fgbg = cv2.BackgroundSubtractorMOG2()
