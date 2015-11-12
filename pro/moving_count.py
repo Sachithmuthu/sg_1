@@ -10,7 +10,6 @@ def gamma_correction(img, correction):
 cap = cv2.VideoCapture('Vehicle Counting.mp4')
 
 sub = cv2.createBackgroundSubtractorMOG2()
-#h
 while(True):
 	#capture frame-by-frame
     ret, frame = cap.read()
