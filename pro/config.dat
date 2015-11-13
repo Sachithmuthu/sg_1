@@ -1,0 +1,9 @@
+#params to configure the camera
+
+params.minArea=700 #define the circle miminum area
+camera resolution
+framerate
+minThreshold
+maxThreshold
+learningRate
+
