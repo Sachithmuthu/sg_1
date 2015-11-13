@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import time
 
+#Hello
 def gamma_correction(img, correction):
     img = img/255.0
     img = cv2.pow(img, correction)
