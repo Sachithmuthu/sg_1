@@ -6,13 +6,15 @@ import numpy as np
 import imutils
  
 camera = PiCamera()
-camera.resolution = (200,150)
-camera.framerate = 2
-rawCapture = PiRGBArray(camera, size=(200,150))
+camera.resolution = (480,360)
+camera.framerate = 15
+rawCapture = PiRGBArray(camera, size=(480,360))
 
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
 fgbg = cv2.BackgroundSubtractorMOG2()
 
+
+##########################################           CONFIG
 params = cv2.SimpleBlobDetector_Params()
 
 params.minThreshold = 10;
