@@ -2,10 +2,12 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import cv2
 import numpy as np
+import re
 
-[[float(i) for i in line.strip().split(',')]for line in open('input.txt').readlines()]
-reading=line.strip()
-config=reading.split(',')
+f = open('input.txt',"r")
+lines = f.readlines()
+results = re.findall('=([\d.]+)',lines[0])
+config=map(float,results)
 
 [resX,resY,frameRate,minThresh,maxTresh,minArea,maxArea]=[  int(config[0]),int(config[1]),float(config[2]),float(config[3]), float(config[4]),float(config[5]),float(config[6])]
 [minCir,minConv,minInert,LR,threshMove,threshCount]=[float(config[7]),float(config[8]),float(config[9]),float(config[10]),float(config[11]),float(config[12]) ]
