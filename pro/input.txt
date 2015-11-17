@@ -1,1 +1,1 @@
-240,180,15,10,255,700,1000,0.2,0.87,0.01,0.02,6,30
+resX=240	|	resY=180	|	frameRate=15	|	minThresh=180	|	maxTresh=255	|	minArea=700	|	maxArea=1000	|	minCir=0.255	|	minConv=0.87	|   minInert=0.01	|	LR=0.02		|	threshMove=6	|	threshCount=30
