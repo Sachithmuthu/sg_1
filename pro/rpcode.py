@@ -1,41 +1,40 @@
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-import time
 import cv2
 import numpy as np
-import imutils
+
+[[float(i) for i in line.strip().split(',')]for line in open('input.txt').readlines()]
+reading=line.strip()
+config=reading.split(',')
  
 camera = PiCamera()
-camera.resolution = (480,360)
-camera.framerate = 15
-rawCapture = PiRGBArray(camera, size=(480,360))
+camera.resolution = (int(config[0]),int(config[1]))				#(480,360)
+camera.framerate = float(config[2])							#15
+rawCapture = PiRGBArray(camera, size= (float(config[0]),float(config[1])) )
 
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
 fgbg = cv2.BackgroundSubtractorMOG2()
 
-
-##########################################           CONFIG
 params = cv2.SimpleBlobDetector_Params()
 
-params.minThreshold = 10;
-params.maxThreshold = 255;
+params.minThreshold = float(config[3]) 						#10	
+params.maxThreshold = float(config[4]) 						#255
 
 params.filterByArea = True
-params.minArea = 700
-#params.maxArea = 1000    <<<<<<<<<<<<<<<<<--------------------------set this value as well!!!
-
+params.minArea = float(config[5]) 							#700
+params.maxArea = float(config[6]) 							#1000  
+	
 params.filterByCircularity = False
-params.minCircularity = 0.2
+params.minCircularity = float(config[7]) 						#0.2
 
 params.filterByConvexity = False
-params.minConvexity = 0.87
+params.minConvexity =float(config[8]) 						#0.87
 
 params.filterByInertia = False
-params.minInertiaRatio = 0.01
+params.minInertiaRatio =float(config[9]) 					#0.01
 
 params.filterByColor=False
 
-#setting up the parameters
 ver = (cv2.__version__).split('.')
 if int(ver[0]) < 3 :
     detector = cv2.SimpleBlobDetector(params)
@@ -48,53 +47,24 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 	move=0
 
         frame = f.array
-	#image = cv2.adaptiveThreshold(frame,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY_INV,3,1)
-	#ret,image = cv2.threshold(frame,127,255,cv2.THRESH_BINARY)
-	image = fgbg.apply(frame,learningRate=0.02)	
-	
+	image = fgbg.apply(frame,learningRate=float(config[10]))	#0.02
 	image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
-	#ret,image = cv2.threshold(image,150,255,cv2.THRESH_BINARY)
-        #image = cv2.GaussianBlur(image,(3,3),3)
-        #image = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY_INV,3,1)
-	#ret,image = cv2.threshold(image,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-	#
- 
-
-	# Detect blobs
-        points = detector.detect(image)
-        #cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures the size of the circle corresponds to the size of blob    
-        blob_image = cv2.drawKeypoints(image, points, np.array([]), (255,0,0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
-        #print the values----------------------------------------------------------------------------------------------------------------
-        #for kp in points :
-            #if not points is None:
-                #counter+=1
-        #print "Count=%d" %counter,
+        points = detector.detect(image) 
+        image_with_blobs = cv2.drawKeypoints(image, points, np.array([]), (255,0,0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
         for kp in points :
-           # print "%d" %(round(kp.size)),
 	    d=round(kp.size)
-	    if d>6:
+	    if d>float(config[11]):  								#6
 	    	move+=1
-	    if d>30:
+	    if d>float(config[12]):								#30
 		counter+=1
 	x=move*5
 	movement=min(x,100)
 	print "Count=%d" %counter,
 	print "Move=%d" %movement,
         print      
-	
-
-
-        #-------------------------------------------------------------------------------------------------------------------------------- 
  
-	# show the frame
-	cv2.imshow("frame", blob_image  )
+	cv2.imshow("frame", image_with_blobs )
 	key = cv2.waitKey(1) & 0xFF
  
-	# clear the stream in preparation for the next frame
 	rawCapture.truncate(0)
- 
-	#if key == ord("z"):
-	#	break
-
