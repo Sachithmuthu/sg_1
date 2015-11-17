@@ -84,9 +84,13 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 	print "CountB=%d" %counterB,
 	print "Move=%d" %movement,
         print      
- 
+ 	
+	#draw a rectangle over the interested area
+	cv2.rectangle(image_with_blobs,(X_low,Y_low),(X_high,Y_high),(255,0,0),1)
+	cv2.rectangle(image,(X_low,Y_low),(X_high,Y_high),(255,0,0),1)	
+		
 	#display the image with blobs
-	cv2.imshow("frame", image_with_blobs )
+	cv2.imshow("frame", image)
 	key = cv2.waitKey(1) & 0xFF
 
 	rawCapture.truncate(0)
