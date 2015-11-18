@@ -13,7 +13,7 @@ config=map(float,results)
 #assign extracted values for each variables
 [resX,resY,frameRate,minThresh,maxTresh,minArea,maxArea]=[  int(config[0]),int(config[1]),float(config[2]),float(config[3]), float(config[4]),float(config[5]),float(config[6])]
 [minCir,minConv,minInert,LR,Move_low,Move_high]=[float(config[7]),float(config[8]),float(config[9]),float(config[10]),float(config[11]),float(config[12]) ]
-[X_low,X_high,Y_low,Y_high,keyA]=[ int(config[13]),int(config[14]),int(config[15]),int(config[16]),int(config[17])]
+[X_low,X_high,Y_low,Y_high,keyA,ID]=[ int(config[13]),int(config[14]),int(config[15]),int(config[16]),int(config[17]),int(config[18])]
 
 #camera configuration
 camera = PiCamera()
@@ -65,7 +65,7 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 	points = detector.detect(image)
 
 	#drawing circles on keypoints 
-        if keyA==1:
+        if keyA:
 		image_with_blobs = cv2.drawKeypoints(frame, points, np.array([]), (255,0,0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 	
 	#for movement
@@ -86,17 +86,17 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 			movement+=1
 
 	#display the values
-	if keyA==1:
+	if keyA:
 	    print "CountB=%d" %counter,
 	    print "Move=%d" %movement   
  	
 	#drawing a rectangle over the interested area <---remove this after tunning
-	if keyA==1:
+	if keyA:
 		cv2.rectangle(image_with_blobs,(X_low,Y_low),(X_high,Y_high),(255,0,0),1)
 		cv2.rectangle(image,(X_low,Y_low),(X_high,Y_high),(255,0,0),1)	
 		
 	#display the image with blobs
-	if keyA==1:
+	if keyA:
 		cv2.imshow("frame", image)
 
 	key = cv2.waitKey(1) & 0xFF
