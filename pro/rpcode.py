@@ -12,8 +12,8 @@ config=map(float,results)
 
 #assign extracted values for each variables
 [resX,resY,frameRate,minThresh,maxTresh,minArea,maxArea]=[  int(config[0]),int(config[1]),float(config[2]),float(config[3]), float(config[4]),float(config[5]),float(config[6])]
-[minCir,minConv,minInert,LR,threshMove,threshCount]=[float(config[7]),float(config[8]),float(config[9]),float(config[10]),float(config[11]),float(config[12]) ]
-[X_low,X_high,Y_low,Y_high]=[ int(config[13]),int(config[14]),int(config[15]),int(config[16])]
+[minCir,minConv,minInert,LR,Move_low,Move_high]=[float(config[7]),float(config[8]),float(config[9]),float(config[10]),float(config[11]),float(config[12]) ]
+[X_low,X_high,Y_low,Y_high,keyA]=[ int(config[13]),int(config[14]),int(config[15]),int(config[16]),int(config[17])]
 
 #camera configuration
 camera = PiCamera()
@@ -56,8 +56,7 @@ else :
 for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
 	counter =0
-	move=0
-	counterB=0
+	movement=0
 	frame = f.array
 	image = fgbg.apply(frame,learningRate=LR)	
 	image = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
@@ -66,31 +65,39 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 	points = detector.detect(image)
 
 	#drawing circles on keypoints 
-        image_with_blobs = cv2.drawKeypoints(frame, points, np.array([]), (255,0,0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+        if keyA==1:
+		image_with_blobs = cv2.drawKeypoints(frame, points, np.array([]), (255,0,0), cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 	
-	#calculations
+	#for movement
+	(cnts,_) = cv2.findContours(image.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+	#calculations for counting
 	for kp in points :
         	x=round(kp.pt[0])
         	y=round(kp.pt[1])
-		diameter=round(kp.size)
-        	if (X_low<x<X_high and Y_low<y<Y_high and diameter>threshCount ):
-            		counterB+=1
-		if diameter>threshMove:  								
-	    		move+=1
-       		print "[x=%d,y=%d]" %(x,y),
-	movement=min(move,100)
-    	
+        	if (X_low<x<X_high and Y_low<y<Y_high):
+            		if not points is None:
+				counter+=1
+	
+	#calculations for movement
+	for c in cnts:
+		area=cv2.contourArea(c)
+		if Move_low<area<Move_high:
+			movement+=1
+
 	#display the values
-	print "CountB=%d" %counterB,
-	print "Move=%d" %movement,
-        print      
+	if keyA==1:
+	    print "CountB=%d" %counter,
+	    print "Move=%d" %movement   
  	
-	#draw a rectangle over the interested area
-	cv2.rectangle(image_with_blobs,(X_low,Y_low),(X_high,Y_high),(255,0,0),1)
-	cv2.rectangle(image,(X_low,Y_low),(X_high,Y_high),(255,0,0),1)	
+	#drawing a rectangle over the interested area <---remove this after tunning
+	if keyA==1:
+		cv2.rectangle(image_with_blobs,(X_low,Y_low),(X_high,Y_high),(255,0,0),1)
+		cv2.rectangle(image,(X_low,Y_low),(X_high,Y_high),(255,0,0),1)	
 		
 	#display the image with blobs
-	cv2.imshow("frame", image)
-	key = cv2.waitKey(1) & 0xFF
+	if keyA==1:
+		cv2.imshow("frame", image)
 
+	key = cv2.waitKey(1) & 0xFF
 	rawCapture.truncate(0)
