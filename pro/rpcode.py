@@ -1,14 +1,16 @@
 from picamera.array import PiRGBArray
 from picamera import PiCamera
+from RBConnection import RBConnection
 import cv2
 import numpy as np
 import re
 
 #extract data from the input file
-f = open('input.txt',"r")
+f = open('/home/pi/Desktop/lights/sg_1/pro/input.txt',"r")
 lines = f.readlines()
 results = re.findall('=([\d.]+)',lines[0])
 config=map(float,results)
+con = RBConnection('S1', '10.21.113.23', 3000)
 
 #assign extracted values for each variables
 [resX,resY,frameRate,minThresh,maxTresh,minArea,maxArea]=[  int(config[0]),int(config[1]),float(config[2]),float(config[3]), float(config[4]),float(config[5]),float(config[6])]
@@ -85,6 +87,7 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 		if Move_low<area<Move_high:
 			movement+=1
 
+	con.send({'sensor': 1, 'activity': movement})
 	#display the values
 	if keyA:
 	    print "CountB=%d" %counter,

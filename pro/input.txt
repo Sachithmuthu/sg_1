@@ -1,1 +1,1 @@
-resX=240	|	resY=180	|	frameRate=25 |	minThresh=100	|	maxTresh=255	|	minArea=500	|	maxArea=1000	|	minCir=0.255	|	minConv=0.87	|   minInert=0.01	|	LR=0.01		|	Move_low=50		|	Move_high=3000		|	X_low=10	|	X_high=230	|	Y_low=10	|	Y_high=170	|	key=1	|	id=1
+resX=240	|	resY=180	|	frameRate=25 |	minThresh=100	|	maxTresh=255	|	minArea=500	|	maxArea=1000	|	minCir=0.255	|	minConv=0.87	|   minInert=0.01	|	LR=0.01		|	Move_low=50		|	Move_high=3000		|	X_low=10	|	X_high=230	|	Y_low=10	|	Y_high=170	|	key=0	|	id=1
