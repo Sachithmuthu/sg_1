@@ -86,12 +86,14 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 		area=cv2.contourArea(c)
 		if Move_low<area<Move_high:
 			movement+=1
-
+	#send
 	try:
-		con.send({'sensor': 1, 'activity': movement})
+		con.send({'sensor': 1, 'activity': movement,'Roger':counter})	
+
+	#if server down, I will try to connect again
 	except:
-		print "error"
 		con = RBConnection('S1', '10.21.113.23', 3000)
+
 	#display the values
 	if keyA:
 	    print "CountB=%d" %counter,
