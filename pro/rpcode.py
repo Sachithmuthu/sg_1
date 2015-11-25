@@ -9,13 +9,18 @@ import re
 f = open('/home/pi/Desktop/lights/sg_1/pro/input.txt',"r")
 lines = f.readlines()
 results = re.findall('=([\d.]+)',lines[0])
+results2 = re.findall('=([\d.]+)',lines[2])
 config=map(float,results)
-con = RBConnection('S1', '10.21.113.23', 3000)
+
 
 #assign extracted values for each variables
 [resX,resY,frameRate,minThresh,maxTresh,minArea,maxArea]=[  int(config[0]),int(config[1]),float(config[2]),float(config[3]), float(config[4]),float(config[5]),float(config[6])]
 [minCir,minConv,minInert,LR,Move_low,Move_high]=[float(config[7]),float(config[8]),float(config[9]),float(config[10]),float(config[11]),float(config[12]) ]
-[X_low,X_high,Y_low,Y_high,keyA,ID]=[ int(config[13]),int(config[14]),int(config[15]),int(config[16]),int(config[17]),int(config[18])]
+[X_low,X_high,Y_low,Y_high,keyA,ID,check,port]=[ int(config[13]),int(config[14]),int(config[15]),int(config[16]),int(config[17]),int(config[18]),int(config[19]),int(config[20])]
+IP=results2[0]
+
+#connection
+con = RBConnection('ID', IP, port)
 
 #camera configuration
 camera = PiCamera()
@@ -55,6 +60,10 @@ if int(ver[0]) < 3 :
 else : 
     detector = cv2.SimpleBlobDetector_create(params)
 
+counter_prev =0
+movement_prev=0
+counter_check=0
+
 for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
 	counter =0
@@ -86,18 +95,28 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 		area=cv2.contourArea(c)
 		if Move_low<area<Move_high:
 			movement+=1
+
+	#counter check
+	if(counter_prev==counter):
+		counter_check+=1
+	else:
+		counter_check=0	
+
 	#send
 	try:
-		con.send({'sensor': 1, 'activity': movement,'Roger':counter})	
+		if (counter!=counter_prev) or (counter_check>check):
+			con.send({'sensor': ID, 'activity': movement,'Roger':counter})	
+			if (counter_check>check):
+				counter_check=0
 
 	#if server down, I will try to connect again
 	except:
-		con = RBConnection('S1', '10.21.113.23', 3000)
+		con = RBConnection('ID',IP, port)
 
 	#display the values
 	if keyA:
-	    print "CountB=%d" %counter,
-	    print "Move=%d" %movement   
+	    	print "CountB=%d" %counter
+		print "Move=%d" %movement   
  	
 	#drawing a rectangle over the interested area <---remove this after tunning
 	if keyA:
