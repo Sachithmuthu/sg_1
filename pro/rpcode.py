@@ -104,10 +104,10 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 
 	#send
 	try:
-		if (counter!=counter_prev) or (counter_check>check):
+		if (counter!=counter_prev) or (counter_check>=check):
 			con.send({'sensor': ID, 'activity': movement,'Roger':counter})	
-			if (counter_check>check):
-				counter_check=0
+			counter_check=0
+			counter_prev=counter
 
 	#if server down, I will try to connect again
 	except:
